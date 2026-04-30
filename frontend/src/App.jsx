@@ -1,18 +1,28 @@
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import './App.css'
-import Login from './pages/login'
+import { Navigate, Route, Routes } from "react-router-dom";
+import Dashboard from "@/pages/dashboard";
+import Login from "@/pages/login";
+import { useAuth } from "@/hooks/useAuth";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-     <div className="text-3xl font-bold underline bg-green-700 flex justify-center items-center"> working tailwind page</div>
-     <Button>Click me</Button>
-    <Login/>
-    </>
-  )
+function PrivateRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
-export default App
+function App() {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/login" element={<Login />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+export default App;
